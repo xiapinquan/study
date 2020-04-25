@@ -1,0 +1,103 @@
+import cv2 as cv
+import numpy as np
+from matplotlib import pyplot as plt 
+
+def huidu():
+    print("==============================")
+    img = cv.imread("rose.png",0)
+    cv.imshow("xpq",img)
+    k = cv.waitKey(0)     #cv.waitkey()会阻塞线程，参数为等待键盘输入的时间，单位为毫秒，当为0时，无限时等待
+    print("k == ",k)
+    print("chr(k) =",chr(k))   #dchr()：ascii->字符   ord():字符->ascii
+    if(k == ord("a")):            
+        cv.destroyAllWindows()
+        cv.imwrite("huidu.png",img)
+    print("==============================")
+
+def matplot_image_Demo():
+    print("==============================")
+    img = cv.imread("rose.png",0)
+    print("type(img) = ",type(img))
+    plt.imshow(img, cmap = 'gray', interpolation = 'bicubic')
+    plt.xticks([])
+    plt.yticks([]) # 隐藏 x 轴和 y 轴上的刻度值
+    plt.show()
+    print("==============================")
+
+def matplotlibDemo():
+    x = np.arange(0, 5, 0.1)
+    y = np.sin(x)
+    plt.plot(x, y)
+
+def catVideo(device,dealyTime):
+    cat = cv.VideoCapture(device)
+    print("WIDTH = ",cat.get(cv.CAP_PROP_FRAME_WIDTH))   #帧宽度
+    print("HEIGHT = ",cat.get(cv.CAP_PROP_FRAME_HEIGHT)) #帧高度
+
+    cat.set(cv.CAP_PROP_FRAME_WIDTH,320)  #设置宽高
+    cat.set(cv.CAP_PROP_FRAME_HEIGHT,240)
+    if not cat.isOpened():
+        exit()
+
+    a = 1
+    while(True):
+        ret,frame = cat.read()    #逐帧捕获
+        if not ret:
+            print("read VideoCature fail !!!")
+            break
+        gray = cv.cvtColor(frame,cv.COLOR_RGB2GRAY)   #转换frame颜色
+        a+=1
+
+        cv.imwrite(str(a)+".png",gray)    #保存当前帧
+
+        cv.imshow("XPQ",gray)
+        k = cv.waitKey(dealyTime)
+        #print(" k = ",k)   #阻塞1毫秒，如果键盘没有输入，k=-1  （k为ascii码）
+        if k == ord("q"):
+            break
+    cat.release()
+    cv.destroyAllWindows()
+
+def recordVideo():
+    cap = cv.VideoCapture(0)
+
+    # 定义编解码器并创建VideoWriter对象
+    fourcc = cv.VideoWriter_fourcc(*'XVID')
+
+    # 详解cv2.VideoWriter_fourcc对象(摘自Learning OpenCV3 Computer Vision with Python,坦白讲不太懂)
+    # fourcc意为四字符代码（Four-Character Codes），顾名思义，该编码由四个字符组成,下面是VideoWriter_fourcc对象一些常用的参数，注意：字符顺序不能弄混
+    # cv2.VideoWriter_fourcc('I', '4', '2', '0'),该参数是YUV编码类型，文件名后缀为.avi
+    # cv2.VideoWriter_fourcc('P', 'I', 'M', 'I'),该参数是MPEG-1编码类型，文件名后缀为.avi
+    # cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'),该参数是MPEG-4编码类型，文件名后缀为.avi
+    # cv2.VideoWriter_fourcc('T', 'H', 'E', 'O'),该参数是Ogg Vorbis,文件名后缀为.ogv
+    # cv2.VideoWriter_fourcc('F', 'L', 'V', '1'),该参数是Flash视频，文件名后缀为.flv
+
+    out = cv.VideoWriter('output.avi', fourcc, 20.0, (640, 480))
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            print("Can't receive frame (stream end?). Exiting ...")
+            break
+        # frame = cv.flip(frame, 0)  #翻转帧
+        out.write(frame)
+        cv.imshow('frame', frame)
+        if cv.waitKey(1) == ord('q'):
+            break
+    # 完成工作后释放所有内容
+    cap.release()
+    out.release()
+    cv.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    #huidu()
+    #matplot_image_Demo()
+    #matplotlibDemo()
+
+    #catVideo(0,1000)   #摄像头
+    #catVideo("advideo.mp4", 1)  # 视频
+
+
+
+
+
